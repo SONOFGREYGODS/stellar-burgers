@@ -8,14 +8,20 @@ import {
   TLoginData,
   TRegisterData
 } from '../../utils/burger-api';
+import { deleteCookie, setCookie } from '../../utils/cookie';
 import { TUser } from '../../utils/types';
+
+const ACCESS_TOKEN_COOKIE = 'accessToken';
 
 export const loginUser = createAsyncThunk(
   'user/loginUser',
   async (data: TLoginData) => {
     const response = await loginUserApi(data);
     localStorage.setItem('refreshToken', response.refreshToken);
-    localStorage.setItem('accessToken', response.accessToken);
+      setCookie(ACCESS_TOKEN_COOKIE, response.accessToken, {
+      secure: true,
+      sameSite: 'Strict'
+    });
     return response.user;
   }
 );
@@ -25,7 +31,10 @@ export const registerUser = createAsyncThunk(
   async (data: TRegisterData) => {
     const response = await registerUserApi(data);
     localStorage.setItem('refreshToken', response.refreshToken);
-    localStorage.setItem('accessToken', response.accessToken);
+      setCookie(ACCESS_TOKEN_COOKIE, response.accessToken, {
+      secure: true,
+      sameSite: 'Strict'
+    });
     return response.user;
   }
 );
@@ -38,7 +47,7 @@ export const checkUserAuth = createAsyncThunk(
       return response.user;
     } catch (error) {
       localStorage.removeItem('refreshToken');
-      localStorage.removeItem('accessToken');
+      deleteCookie(ACCESS_TOKEN_COOKIE);
       throw error;
     }
   }
@@ -57,7 +66,7 @@ export const logoutUser = createAsyncThunk('user/logoutUser', async () => {
     await logoutApi();
   } finally {
     localStorage.removeItem('refreshToken');
-    localStorage.removeItem('accessToken');
+    deleteCookie(ACCESS_TOKEN_COOKIE);
   }
 });
 

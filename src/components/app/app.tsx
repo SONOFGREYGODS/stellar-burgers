@@ -55,7 +55,7 @@ const App = () => {
 
   const orderNumber =
     feedMatch?.params.number || profileOrderMatch?.params.number;
-  const modalTitle = orderNumber ? `#${orderNumber}` : '';
+  const modalTitle = orderNumber || '';
 
   return (
     <div className={styles.app}>
@@ -115,13 +115,31 @@ const App = () => {
         />
 
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
-        {/* Добавил отдельную страницу для заказа */}
-        <Route path='/feed/:number' element={<OrderInfo />} />
+                  <Route
+          path='/feed/:number'
+          element={
+            <>
+              <p
+                className={`text text_type_digits-default ${styles.detailHeader}`}
+              >
+                #{modalTitle && modalTitle.padStart(6, '0')}
+              </p>
+              <OrderInfo />
+            </>
+          }
+        />
         <Route
           path='/profile/orders/:number'
           element={
             <ProtectedRoute>
-              <OrderInfo />
+              <>
+                <p
+                  className={`text text_type_digits-default ${styles.detailHeader}`}
+                >
+                  #{modalTitle && modalTitle.padStart(6, '0')}
+                </p>
+                <OrderInfo />
+              </>
             </ProtectedRoute>
           }
         />
@@ -141,7 +159,10 @@ const App = () => {
           <Route
             path='/feed/:number'
             element={
-              <Modal title={modalTitle} onClose={handleModalClose}>
+              <Modal
+                title={modalTitle ? `#${modalTitle.padStart(6, '0')}` : ''}
+                onClose={handleModalClose}
+              >
                 <OrderInfo />
               </Modal>
             }
@@ -150,7 +171,10 @@ const App = () => {
             path='/profile/orders/:number'
             element={
               <ProtectedRoute>
-                <Modal title={modalTitle} onClose={handleModalClose}>
+                <Modal
+                  title={modalTitle ? `#${modalTitle.padStart(6, '0')}` : ''}
+                  onClose={handleModalClose}
+                >
                   <OrderInfo />
                 </Modal>
               </ProtectedRoute>
