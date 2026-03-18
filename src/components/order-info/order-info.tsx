@@ -1,23 +1,37 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient } from '@utils-types';
+import { TIngredient, TOrder } from '@utils-types';
+import { useSelector } from '../../services/store';
+import { getOrderByNumberApi } from '../../utils/burger-api';
 
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  const { number } = useParams();
+  const [orderData, setOrderData] = useState<TOrder | null>(null);
 
-  const ingredients: TIngredient[] = [];
+  const ingredients = useSelector((state) => state.ingredients.ingredients);
+  const feedOrders = useSelector((state) => state.feed.orders);
+  const userOrders = useSelector((state) => state.userOrders.orders);
 
-  /* Готовим данные для отображения */
+  useEffect(() => {
+    const orderInStore =
+      feedOrders.find((o) => o.number === Number(number)) ||
+      userOrders.find((o) => o.number === Number(number));
+
+    if (orderInStore) {
+      setOrderData(orderInStore);
+    } else if (number) {
+      getOrderByNumberApi(Number(number))
+        .then((data) => {
+          if (data?.orders?.length) {
+            setOrderData(data.orders[0]);
+          }
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [number, feedOrders, userOrders]);
+
   const orderInfo = useMemo(() => {
     if (!orderData || !ingredients.length) return null;
 
