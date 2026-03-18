@@ -20,7 +20,7 @@ interface IngredientsState {
 }
 
 // Начальное состояние (пустая полка)
-const initialState: IngredientsState = {
+export const initialState: IngredientsState = {
   ingredients: [],
   isLoading: false,
   error: null
