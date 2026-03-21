@@ -1,7 +1,4 @@
-import reducer, { 
-  fetchIngredients, 
-  initialState 
-} from './ingredientsSlice';
+import reducer, { fetchIngredients, initialState } from './ingredientsSlice';
 
 describe('Тестирование слайса ingredients (асинхронные экшены)', () => {
   const mockIngredients = [
@@ -29,9 +26,9 @@ describe('Тестирование слайса ingredients (асинхронн�
   });
 
   it('должен записывать ингредиенты и отключать isLoading при fetchIngredients.fulfilled', () => {
-    const action = { 
-      type: fetchIngredients.fulfilled.type, 
-      payload: mockIngredients 
+    const action = {
+      type: fetchIngredients.fulfilled.type,
+      payload: mockIngredients
     };
     const state = reducer(initialState, action);
     
@@ -42,9 +39,9 @@ describe('Тестирование слайса ingredients (асинхронн�
 
   it('должен записывать ошибку и отключать isLoading при fetchIngredients.rejected', () => {
     const errorMessage = 'Ошибка сервера';
-    const action = { 
-      type: fetchIngredients.rejected.type, 
-      error: { message: errorMessage } 
+    const action = {
+      type: fetchIngredients.rejected.type,
+      error: { message: errorMessage }
     };
     const state = reducer(initialState, action);
     

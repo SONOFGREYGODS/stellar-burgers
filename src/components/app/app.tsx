@@ -115,7 +115,7 @@ const App = () => {
         />
 
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
-                  <Route
+        <Route
           path='/feed/:number'
           element={
             <>

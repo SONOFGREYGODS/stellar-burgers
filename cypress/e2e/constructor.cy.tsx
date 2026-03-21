@@ -1,5 +1,21 @@
 /// <reference types="cypress" />
 
+const testUrl = 'http://localhost:4000';
+
+const selectors = {
+  modalsRoot: '#modals',
+  modalCloseButton: '#modals button',
+  ingredientAddButton: 'button',
+  pageBody: 'body'
+};
+
+const textValues = {
+  bunName: 'Краторная булка N-200i',
+  mainName: 'Биокотлета из марсианской Магнолии',
+  submitOrder: 'Оформить заказ',
+  orderNumber: '12345'
+};
+
 describe('Тестирование функционала конструктора бургера', () => {
   beforeEach(() => {
     cy.intercept('GET', 'api/ingredients', { fixture: 'ingredients.json' });
@@ -7,30 +23,32 @@ describe('Тестирование функционала конструктор
 
   describe('Тестирование модальных окон ингредиента', () => {
     beforeEach(() => {
-      cy.visit('http://localhost:4000');
+      cy.visit(testUrl);
+      cy.contains(textValues.bunName).as('bunIngredient');
+      cy.get(selectors.modalsRoot).as('modalsRoot');
+      cy.get(selectors.modalCloseButton).first().as('modalCloseButton');
     });
 
     it('должно открываться модальное окно с описанием конкретного ингредиента', () => {
-      const ingredientName = 'Краторная булка N-200i';
-      cy.contains(ingredientName).click();
+      cy.get('@bunIngredient').click();
 
-      cy.get('#modals').contains(ingredientName).should('exist');
+      cy.get('@modalsRoot').contains(textValues.bunName).should('exist');
     });
 
     it('должно закрываться по клику на крестик', () => {
-      cy.contains('Краторная булка N-200i').click();
-      cy.get('#modals').contains('Краторная булка N-200i').should('exist');
+      cy.get('@bunIngredient').click();
+      cy.get('@modalsRoot').contains(textValues.bunName).should('exist');
 
-      cy.get('#modals button').first().click();
-      cy.get('#modals').children().should('have.length', 0);
+      cy.get('@modalCloseButton').click();
+      cy.get('@modalsRoot').children().should('have.length', 0);
     });
 
     it('должно закрываться по клику на оверлей', () => {
-      cy.contains('Краторная булка N-200i').click();
-      cy.get('#modals').contains('Краторная булка N-200i').should('exist');
+      cy.get('@bunIngredient').click();
+      cy.get('@modalsRoot').contains(textValues.bunName).should('exist');
 
-      cy.get('body').click(10, 10);
-      cy.get('#modals').children().should('have.length', 0);
+      cy.get(selectors.pageBody).click(10, 10);
+      cy.get('@modalsRoot').children().should('have.length', 0);
     });
   });
 
@@ -42,17 +60,29 @@ describe('Тестирование функционала конструктор
       });
       cy.intercept('POST', 'api/orders', {
         success: true,
-        order: { number: 12345 }
+        order: { number: Number(textValues.orderNumber) }
       });
 
-      cy.visit('http://localhost:4000');
-      
+      cy.visit(testUrl);
+
       cy.window().then((win) => {
         win.localStorage.setItem('refreshToken', 'mock-refresh-token');
       });
       cy.setCookie('accessToken', 'mock-access-token');
 
       cy.reload();
+
+      cy.contains(textValues.bunName)
+        .parent()
+        .find(selectors.ingredientAddButton)
+        .as('bunAddButton');
+      cy.contains(textValues.mainName)
+        .parent()
+        .find(selectors.ingredientAddButton)
+        .as('mainAddButton');
+      cy.contains(textValues.submitOrder).as('submitOrderButton');
+      cy.get(selectors.modalsRoot).as('modalsRoot');
+      cy.get(selectors.modalCloseButton).first().as('modalCloseButton');
     });
 
     afterEach(() => {
@@ -61,15 +91,15 @@ describe('Тестирование функционала конструктор
     });
 
     it('должен собрать бургер и успешно оформить заказ', () => {
-      cy.contains('Краторная булка N-200i').parent().find('button').click();
-      cy.contains('Биокотлета из марсианской Магнолии').parent().find('button').click();
+      cy.get('@bunAddButton').click();
+      cy.get('@mainAddButton').click();
 
-      cy.contains('Оформить заказ').click();
+      cy.get('@submitOrderButton').click();
 
-      cy.get('#modals').contains('12345').should('exist');
+      cy.get('@modalsRoot').contains(textValues.orderNumber).should('exist');
 
-      cy.get('#modals button').first().click();
-      cy.get('#modals').children().should('have.length', 0);
+      cy.get('@modalCloseButton').click();
+      cy.get('@modalsRoot').children().should('have.length', 0);
     });
   });
 });

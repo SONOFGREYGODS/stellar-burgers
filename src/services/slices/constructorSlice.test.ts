@@ -31,14 +31,18 @@ describe('Тестирование редьюсера addIngredient', () => {
 
   it('должен добавлять булку (заменять текущую)', () => {
     const state = reducer(initialState, addIngredient(mockBun));
-    expect(state.constructorItems.bun).toEqual(expect.objectContaining(mockBun));
+    expect(state.constructorItems.bun).toEqual(
+      expect.objectContaining(mockBun)
+    );
     expect(state.constructorItems.bun).toHaveProperty('id');
   });
 
   it('должен добавлять начинку в массив ингредиентов', () => {
     const state = reducer(initialState, addIngredient(mockMain));
     expect(state.constructorItems.ingredients).toHaveLength(1);
-    expect(state.constructorItems.ingredients[0]).toEqual(expect.objectContaining(mockMain));
+    expect(state.constructorItems.ingredients[0]).toEqual(
+      expect.objectContaining(mockMain)
+    );
     expect(state.constructorItems.ingredients[0]).toHaveProperty('id');
   });
 });
