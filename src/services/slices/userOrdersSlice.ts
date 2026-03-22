@@ -4,7 +4,7 @@ import { TOrder } from '../../utils/types';
 
 export const fetchUserOrders = createAsyncThunk<TOrder[]>(
   'userOrders/fetchUserOrders',
-  () => getOrdersApi() // Изменили эту строку: убрали async, скобки и return
+  () => getOrdersApi()
 );
 
 interface UserOrdersState {
@@ -13,7 +13,7 @@ interface UserOrdersState {
   error: string | null;
 }
 
-const initialState: UserOrdersState = {
+export const initialState: UserOrdersState = {
   orders: [],
   isLoading: false,
   error: null
