@@ -26,7 +26,6 @@ describe('Тестирование функционала конструктор
       cy.visit(testUrl);
       cy.contains(textValues.bunName).as('bunIngredient');
       cy.get(selectors.modalsRoot).as('modalsRoot');
-      cy.get(selectors.modalCloseButton).first().as('modalCloseButton');
     });
 
     it('должно открываться модальное окно с описанием конкретного ингредиента', () => {
@@ -38,8 +37,7 @@ describe('Тестирование функционала конструктор
     it('должно закрываться по клику на крестик', () => {
       cy.get('@bunIngredient').click();
       cy.get('@modalsRoot').contains(textValues.bunName).should('exist');
-
-      cy.get('@modalCloseButton').click();
+      cy.get(selectors.modalCloseButton).first().click();
       cy.get('@modalsRoot').children().should('have.length', 0);
     });
 
@@ -82,7 +80,6 @@ describe('Тестирование функционала конструктор
         .as('mainAddButton');
       cy.contains(textValues.submitOrder).as('submitOrderButton');
       cy.get(selectors.modalsRoot).as('modalsRoot');
-      cy.get(selectors.modalCloseButton).first().as('modalCloseButton');
     });
 
     afterEach(() => {
@@ -97,8 +94,7 @@ describe('Тестирование функционала конструктор
       cy.get('@submitOrderButton').click();
 
       cy.get('@modalsRoot').contains(textValues.orderNumber).should('exist');
-
-      cy.get('@modalCloseButton').click();
+      cy.get(selectors.modalCloseButton).first().click();
       cy.get('@modalsRoot').children().should('have.length', 0);
     });
   });
